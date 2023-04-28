@@ -10,6 +10,9 @@ type Product struct {
 	Description string `json:"description" form:"description" query:"description"`
 	Owner       uint   `json:"owner" form:"owner" query:"owner"`
 }
+type Owner struct {
+	Owner string
+}
 
 func Createproduct(db *gorm.DB, Product *Product) (err error) {
 	err = db.Table("Products").Create(Product).Error
@@ -29,6 +32,13 @@ func GetProductById(db *gorm.DB, Product *Product, id int) (err error) {
 
 func GetProductByOwner(db *gorm.DB, Product *Product, owner int) (err error) {
 	err = db.Table("Products").Where("id = ?", owner).First(Product).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func GetProductsOwner(db *gorm.DB, Owner *Owner, id int) (err error) {
+	err = db.Table("Products").Select("Owner").Where("id = ?", id).First(Owner).Error
 	if err != nil {
 		return err
 	}
