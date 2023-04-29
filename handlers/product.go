@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"net/http"
@@ -22,6 +22,47 @@ func NewProduct() *ProductRepo {
 	return &ProductRepo{Db: db}
 }
 
+func (repository *ProductRepo) GetProducts(c echo.Context) error {
+	var Products []models.Product
+	c.Bind(&Products)
+	err := models.GetProducts(repository.Db, &Products)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			ErrorResponse{Code: http.StatusInternalServerError, Message: err.Error()},
+		)
+		return err
+	}
+	return c.JSON(http.StatusOK, Products)
+}
+
+func (repository *ProductRepo) CreateProduct(c echo.Context) error {
+	var Product models.Product
+	c.Bind(&Product)
+	err := models.CreateProduct(repository.Db, &Product)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			ErrorResponse{Code: http.StatusInternalServerError, Message: err.Error()},
+		)
+		return err
+	}
+	return c.JSON(http.StatusOK, Product)
+}
+
+func (repository *ProductRepo) UpdateProduct(c echo.Context) error {
+	var Product models.Product
+	c.Bind(&Product)
+	err := models.UpdateProduct(repository.Db, &Product)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			ErrorResponse{Code: http.StatusInternalServerError, Message: err.Error()},
+		)
+		return err
+	}
+	return c.JSON(http.StatusOK, Product)
+}
 func (repository *ProductRepo) GetProductById(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	var Product models.Product

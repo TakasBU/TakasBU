@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"net/http"
@@ -25,6 +25,48 @@ func NewUser() *UserRepo {
 	db := databases.InitDb()
 	db.AutoMigrate(&models.User{})
 	return &UserRepo{Db: db}
+}
+
+func (repository *UserRepo) GetUsers(c echo.Context) error {
+	var users []models.User
+	c.Bind(&users)
+	err := models.GetUsers(repository.Db, &users)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			ErrorResponse{Code: http.StatusInternalServerError, Message: err.Error()},
+		)
+		return err
+	}
+	return c.JSON(http.StatusOK, users)
+}
+
+func (repository *UserRepo) CreateUser(c echo.Context) error {
+	var user models.User
+	c.Bind(&user)
+	err := models.CreateUser(repository.Db, &user)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			ErrorResponse{Code: http.StatusInternalServerError, Message: err.Error()},
+		)
+		return err
+	}
+	return c.JSON(http.StatusOK, user)
+}
+
+func (repository *UserRepo) UpdateUser(c echo.Context) error {
+	var user models.User
+	c.Bind(&user)
+	err := models.UpdateUser(repository.Db, &user)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			ErrorResponse{Code: http.StatusInternalServerError, Message: err.Error()},
+		)
+		return err
+	}
+	return c.JSON(http.StatusOK, user)
 }
 
 func (repository *UserRepo) GetUserById(c echo.Context) error {

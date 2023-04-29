@@ -2,16 +2,12 @@ package databases
 
 import (
 	"fmt"
+	"log"
+
+	"github.com/TakasBU/TakasBU/initializers"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
-
-const DB_USERNAME = "root"
-const DB_PASSWORD = ""
-const DB_NAME = "takasbu"
-const DB_HOST = "6.tcp.eu.ngrok.io"
-const DB_PORT = "12947"
-//TODO bunları gizlicez
 
 var Db *gorm.DB
 
@@ -21,14 +17,19 @@ func InitDb() *gorm.DB {
 }
 
 func connectDB() *gorm.DB {
-	var err error
-	dsn := DB_USERNAME + ":" + DB_PASSWORD + "@tcp" + "(" + DB_HOST + ":" + DB_PORT + ")/" + DB_NAME + "?" + "parseTime=true&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	config, err := initializers.LoadConfig(".")
 
 	if err != nil {
-		fmt.Println("Error connecting to database : error=", err)
-		return nil
+		log.Fatal("🚀 Could not load environment variables", err)
 	}
+	var err2 error
+	dsn := config.DBUserName + ":" + config.DBUserPassword + "@tcp" + "(" + config.DBHost + ":" + config.DBPort + ")/" + config.DBName + "?" + "parseTime=true&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
+	if err2 != nil {
+		log.Fatal("Failed to connect to the Database")
+	}
+	fmt.Println("🚀 Connected Successfully to the Database")
 
 	return db
 }

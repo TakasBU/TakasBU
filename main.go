@@ -1,21 +1,26 @@
 package main
 
 import (
+	"log"
+
+	"github.com/TakasBU/TakasBU/initializers"
 	"github.com/TakasBU/TakasBU/middlewares"
 	"github.com/TakasBU/TakasBU/routes"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
-	// Echo instance
+	config, err := initializers.LoadConfig(".")
+
+	if err != nil {
+		log.Fatal("🚀 Could not load environment variables", err)
+	}
+
 	e := echo.New()
 
-	// Middleware
 	middlewares.Middleware(e)
 
-	// Routes
 	routes.Route(e)
 
-	// Start server
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":" + config.ServerPort))
 }
