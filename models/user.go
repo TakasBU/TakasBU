@@ -82,6 +82,7 @@ func GetUserById(db *gorm.DB, User *User, id int) (err error) {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

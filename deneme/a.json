@@ -1,0 +1,7 @@
+{
+  "name": "name",
+  "email": "email",
+  "password": "password123",
+  "passwordConfirm": "password123",
+  "photo": "photo"
+}

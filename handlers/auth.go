@@ -9,8 +9,6 @@ import (
 	"github.com/TakasBU/TakasBU/initializers"
 	"github.com/TakasBU/TakasBU/models"
 	"github.com/TakasBU/TakasBU/utils"
-	"github.com/thanhpk/randstr"
-
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -67,37 +65,37 @@ func (ac *AuthController) SignUpUser(ctx echo.Context) error {
 		ctx.JSON(http.StatusBadGateway, ErrorResponse{Code: http.StatusBadGateway, Message: "kotu seyler oldu"})
 		return result.Error
 	}
+	/*
+		config, _ := initializers.LoadConfig(".")
 
-	config, _ := initializers.LoadConfig(".")
+		// Generate Verification Code
+		code := randstr.String(20)
 
-	// Generate Verification Code
-	code := randstr.String(20)
+		verification_code := utils.Encode(code)
 
-	verification_code := utils.Encode(code)
+		// Update User in Database
+		newUser.VerificationCode = verification_code
+		ac.DB.Save(newUser)
 
-	// Update User in Database
-	newUser.VerificationCode = verification_code
-	ac.DB.Save(newUser)
+		var firstName = newUser.Name
 
-	var firstName = newUser.Name
+		if strings.Contains(firstName, " ") {
+			firstName = strings.Split(firstName, " ")[1]
+		}
 
-	if strings.Contains(firstName, " ") {
-		firstName = strings.Split(firstName, " ")[1]
-	}
+		// 👇 Send Email
+		emailData := utils.EmailData{
+			URL:       config.ClientOrigin + "/verifyemail/" + code,
+			FirstName: firstName,
+			Subject:   "Your account verification code",
+		}
 
-	// 👇 Send Email
-	emailData := utils.EmailData{
-		URL:       config.ClientOrigin + "/verifyemail/" + code,
-		FirstName: firstName,
-		Subject:   "Your account verification code",
-	}
+		utils.SendEmail(&newUser, &emailData)
 
-	utils.SendEmail(&newUser, &emailData)
-
-	message := "We sent an email with a verification code to " + newUser.Email
-	//TODO Email tamamlanıcak
-	ctx.JSON(http.StatusCreated, ErrorResponse{Code: http.StatusCreated, Message: message})
-	return ctx.JSON(http.StatusOK, payload)
+		message := "We sent an email with a verification code to " + newUser.Email
+		//TODO Email tamamlanıcak
+		ctx.JSON(http.StatusCreated, ErrorResponse{Code: http.StatusCreated, Message: message})*/
+	return ctx.JSON(http.StatusOK, "hesap olusturuldu")
 
 }
 
@@ -116,11 +114,10 @@ func (ac *AuthController) SignInUser(ctx echo.Context) error {
 		return result.Error
 	}
 
-	// if !user.Verified {
-	// 	ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: "ben malım 3"})
-	// 	/*ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": "Please verify your email"}) mesajları nasıl yazıcam bilimiyorum*/
-	// 	return result.Error
-	// }
+	if !user.Verified {
+		ctx.JSON(http.StatusForbidden, ErrorResponse{Code: http.StatusForbidden, Message: "ben malım 3"})
+		return result.Error
+	}
 
 	if err := utils.VerifyPassword(user.Password, payload.Password); err != nil {
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: "ben malım 4"})
@@ -148,5 +145,5 @@ func (ac *AuthController) SignInUser(ctx echo.Context) error {
 	ctx.SetCookie(&cookie)
 
 	ctx.JSON(http.StatusOK, ErrorResponse{Code: http.StatusOK, Message: token})
-	return ctx.JSON(http.StatusOK, payload)
+	return ctx.JSON(http.StatusOK, "payload")
 }
