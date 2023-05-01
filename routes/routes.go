@@ -25,8 +25,7 @@ func User(e *echo.Echo) {
 	e.GET("/api/users/:id", userRepo.GetUserById)
 	e.GET("/api/users", userRepo.GetUsers)
 	e.PUT("/api/users/:id", userRepo.UpdateUser)
-	/*	e.POST("/api/users", userRepo.CreateUser) BUNA GEREK YOK ÇÜNKÜ AŞAĞIDA 51.SATIRDA DAHA GÜZEL BİR REGİSTER VAR AMA İBO BİZİM BU KENDİ YAZDIKLARIMIZI YİNEDE YAZMAMIZ LAZIM
-		ŞİMDİ SADECE YAZDIĞIMIZ USERİ ADAMINKİLER GİBİ GELİŞTİRİCEZ UMARIM BUNLAR ÇALIŞIYORDUR ÜSTTEKİ VE ALTTAKİLER   */
+	e.POST("/api/users", userRepo.CreateUser)
 	e.DELETE("/api/users/:id", userRepo.DeleteUser)
 
 }
@@ -44,7 +43,7 @@ func Product(e *echo.Echo) {
 
 func AuthRoute(e *echo.Echo) {
 	rc := handlers.NewAuthController()
-	router := e.Group("/auth")
+	router := e.Group("/api/auth")
 
 	router.POST("/register", rc.SignUpUser)
 	router.POST("/login", rc.SignInUser)

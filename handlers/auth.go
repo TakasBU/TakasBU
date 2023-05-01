@@ -9,6 +9,7 @@ import (
 	"github.com/TakasBU/TakasBU/initializers"
 	"github.com/TakasBU/TakasBU/models"
 	"github.com/TakasBU/TakasBU/utils"
+	"github.com/thanhpk/randstr"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -32,8 +33,8 @@ func (ac *AuthController) SignUpUser(ctx echo.Context) error {
 	}
 
 	if payload.Password != payload.PasswordConfirm {
-		ctx.JSON(http.StatusBadRequest, ErrorResponse{Code: http.StatusBadRequest, Message: "Passwords do not match"})
-		/*TODO BURDA NE YAZICAM */
+		ctx.JSON(http.StatusBadRequest, ErrorResponse{Code: http.StatusBadRequest, Message: "ben alttaki"})
+		return nil
 	}
 
 	hashedPassword, err := utils.HashPassword(payload.Password)
@@ -66,36 +67,36 @@ func (ac *AuthController) SignUpUser(ctx echo.Context) error {
 		ctx.JSON(http.StatusBadGateway, ErrorResponse{Code: http.StatusBadGateway, Message: "kotu seyler oldu"})
 		return result.Error
 	}
-	/*
-		config, _ := initializers.LoadConfig(".")
 
-		// Generate Verification Code
-		code := randstr.String(20)
+	config, _ := initializers.LoadConfig(".")
 
-		verification_code := utils.Encode(code)
+	// Generate Verification Code
+	code := randstr.String(20)
 
-		// Update User in Database
-		newUser.VerificationCode = verification_code
-		ac.DB.Save(newUser)
+	verification_code := utils.Encode(code)
 
-		var firstName = newUser.Name
+	// Update User in Database
+	newUser.VerificationCode = verification_code
+	ac.DB.Save(newUser)
 
-		if strings.Contains(firstName, " ") {
-			firstName = strings.Split(firstName, " ")[1]
-		}
+	var firstName = newUser.Name
 
-		// 👇 Send Email
-		emailData := utils.EmailData{
-			URL:       config.ClientOrigin + "/verifyemail/" + code,
-			FirstName: firstName,
-			Subject:   "Your account verification code",
-		}
+	if strings.Contains(firstName, " ") {
+		firstName = strings.Split(firstName, " ")[1]
+	}
 
-		utils.SendEmail(&newUser, &emailData)
+	// 👇 Send Email
+	emailData := utils.EmailData{
+		URL:       config.ClientOrigin + "/verifyemail/" + code,
+		FirstName: firstName,
+		Subject:   "Your account verification code",
+	}
 
-		message := "We sent an email with a verification code to " + newUser.Email */
+	utils.SendEmail(&newUser, &emailData)
+
+	message := "We sent an email with a verification code to " + newUser.Email
 	//TODO Email tamamlanıcak
-	ctx.JSON(http.StatusCreated, ErrorResponse{Code: http.StatusCreated, Message: "oldu"})
+	ctx.JSON(http.StatusCreated, ErrorResponse{Code: http.StatusCreated, Message: message})
 	return ctx.JSON(http.StatusOK, payload)
 
 }
@@ -104,25 +105,25 @@ func (ac *AuthController) SignInUser(ctx echo.Context) error {
 	var payload *models.SignInInput
 
 	if err := ctx.Bind(&payload); err != nil {
-		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: err.Error()})
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: "ben malım"})
 		return err
 	}
 
 	var user models.User
 	result := ac.DB.First(&user, "email = ?", strings.ToLower(payload.Email))
 	if result.Error != nil {
-		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: result.Error.Error()})
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: "ben malım2"})
 		return result.Error
 	}
 
-	if !user.Verified {
-		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: result.Error.Error()})
-		/*ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": "Please verify your email"}) mesajları nasıl yazıcam bilimiyorum*/
-		return result.Error
-	}
+	// if !user.Verified {
+	// 	ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: "ben malım 3"})
+	// 	/*ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": "Please verify your email"}) mesajları nasıl yazıcam bilimiyorum*/
+	// 	return result.Error
+	// }
 
 	if err := utils.VerifyPassword(user.Password, payload.Password); err != nil {
-		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: result.Error.Error()})
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: "ben malım 4"})
 		return result.Error
 	}
 
@@ -131,7 +132,7 @@ func (ac *AuthController) SignInUser(ctx echo.Context) error {
 	// Generate Token
 	token, err := utils.GenerateToken(config.TokenExpiresIn, user.ID, config.TokenSecret)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: result.Error.Error()})
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Code: http.StatusBadRequest, Message: err.Error()})
 		return result.Error
 	}
 
@@ -139,7 +140,6 @@ func (ac *AuthController) SignInUser(ctx echo.Context) error {
 	cookie.Name = "token"
 	cookie.Value = token
 	cookie.Expires = time.Now().Add(time.Duration(config.TokenMaxAge * 60))
-
 	cookie.Domain = "localhost"
 	cookie.Secure = false
 	cookie.HttpOnly = true

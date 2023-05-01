@@ -41,23 +41,20 @@ func (repository *UserRepo) GetUsers(c echo.Context) error {
 	return c.JSON(http.StatusOK, users)
 }
 
-/*
-	gerek yok auth.go da daha iyisi var
-
-	func (repository *UserRepo) CreateUser(c echo.Context) error {
-		var user models.User
-		c.Bind(&user)
-		err := models.CreateUser(repository.Db, &user)
-		if err != nil {
-			c.JSON(
-				http.StatusInternalServerError,
-				ErrorResponse{Code: http.StatusInternalServerError, Message: err.Error()},
-			)
-			return err
-		}
-		return c.JSON(http.StatusOK, user)
+func (repository *UserRepo) CreateUser(c echo.Context) error {
+	var user models.User
+	c.Bind(&user)
+	err := models.CreateUser(repository.Db, &user)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			ErrorResponse{Code: http.StatusInternalServerError, Message: err.Error()},
+		)
+		return err
 	}
-*/
+	return c.JSON(http.StatusOK, user)
+}
+
 func (repository *UserRepo) UpdateUser(c echo.Context) error {
 	var user models.User
 	c.Bind(&user)

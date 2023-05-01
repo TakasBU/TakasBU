@@ -6,19 +6,18 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type User struct {
-	ID               uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	Name             string    `gorm:"type:varchar(255);not null"`
-	Email            string    `gorm:"uniqueIndex;not null"`
-	Password         string    `gorm:"not null"`
-	Role             string    `gorm:"type:varchar(255);not null"`
-	Provider         string    `gorm:"not null"`
-	Photo            string    `gorm:"not null"`
+	ID               uint   `gorm:"primarykey"`
+	Name             string `gorm:"type:varchar(255);not null"`
+	Email            string `gorm:"uniqueIndex;not null"`
+	Password         string `gorm:"not null"`
+	Role             string `gorm:"type:varchar(255);not null"`
+	Provider         string `gorm:"not null"`
+	Photo            string `gorm:"not null"`
 	VerificationCode string
 	Verified         bool      `gorm:"not null"`
 	CreatedAt        time.Time `gorm:"not null"`
@@ -39,7 +38,7 @@ type SignInInput struct {
 }
 
 type UserResponse struct {
-	ID        uuid.UUID `json:"id,omitempty"`
+	ID        uint      `gorm:"primarykey"`
 	Name      string    `json:"name,omitempty"`
 	Email     string    `json:"email,omitempty"`
 	Role      string    `json:"role,omitempty"`
